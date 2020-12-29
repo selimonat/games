@@ -33,12 +33,20 @@ def create_app(test_config=None):
     def game_summary():
         return game.game_summary()
 
-    @app.route('/start_hand')
-    def start_hand():
-        return game.start_hand()
+    @app.route('/start_game')
+    def start_game():
+        return game.start_game()
 
-    @app.route('/list_choices')
-    def list_choices():
-        return game.list_choices()
+    @app.route('/_hand_table_exchange/<id>')
+    def _hand_table_exchange(id):
+        return game._hand_table_exchange(int(id))
+
+    @app.route('/_deck_to_table')
+    def _deck_to_table():
+        return game._deck_to_table()
+
+    @app.route('/_open_card/<id>')
+    def _open_card(id):
+        return game._open_card(int(id))
 
     return app
