@@ -1,6 +1,5 @@
 import numpy as np
 import json
-from pprint import pprint as pp
 
 # all cards of the game
 cards = [ [-2] * 5, [-1] * 10, [0] * 15 , [1] * 10 , [2] * 10 , [3] * 10 , [4] * 10 , [5] * 10 , [6] * 10 ,
@@ -42,8 +41,8 @@ class Skyjo:
         self.hand = []
         self.states = [False] * 12
         self.table = []
-        self.finished = []
-        self.possible_actions = [self.start_game]
+        self.finished = True
+        self.possible_actions = {self.start_game.__name__: []}
         # self.masked_hand = masked_hand
         print(f"There are {self.deck_size} cards in the deck.")
 
@@ -84,6 +83,7 @@ class Skyjo:
         """
         Deals a hand of 12 cards with 2 open ones.
         """
+        print('Dealing a hand of 12 cards')
         self.hand = self._deal(12)
         # TODO: Organize in triplets
         self.states = [False] * 12  # False is Closed
@@ -94,13 +94,12 @@ class Skyjo:
         # Gets a deck, and deals 1 card to table and 12 cards to a hand.
 
         print("Starting game.")
+        self.finished = False
         self.deck = cards
         self.deck_size = len(self.deck)
         self._deal_hand()
         self.update_table()
-        self.possible_actions = [self.exchange_card, self.update_table]
-        self.finished = False
-        return self.summary()
+        self.possible_actions = {self.exchange_card.__name__: [], self.update_table.__name__: []}
 
     def exchange_card(self, position):
         # Exchanges the card at position with the one on the table (and opens it).
@@ -111,7 +110,7 @@ class Skyjo:
         self.open_card(position)
 
         self.table.extend([dummy])
-        self.possible_actions = [self.exchange_card, self.update_table]
+        self.possible_actions = {self.exchange_card.__name__: [], self.update_table.__name__: []}
         return self.summary()
 
     def update_table(self):
@@ -119,9 +118,8 @@ class Skyjo:
         card = self._deal(1)
         print(f"Moving card {card} from deck to table.")
         self.table.extend(card)
-        self.possible_actions = [self.exchange_card, self.open_card]
+        self.possible_actions = {self.exchange_card.__name__: [], self.open_card.__name__: []}
         self.game_checks()
-        return self.summary()
 
     def open_card(self, position):
 
@@ -135,15 +133,16 @@ class Skyjo:
         if self.deck_size < 1:
             self.finished = True
             print("Game finished because no more cards left.")
-            self.possible_actions = None
+            self.possible_actions = {self.start_game.__name__: []}
 
         # if all cards are open
         if len(self.closed_cards()) == 0:
             self.finished = True
-            self.possible_actions = None
+            print("Game finished because all cards open.")
+            self.possible_actions = {self.start_game.__name__: []}
 
         if self.finished is True:
-            self.possible_actions = [self.start_game]
+            self.possible_actions = {self.start_game.__name__: []}
 
         return self.summary()
 
@@ -167,7 +166,7 @@ class Skyjo:
         return merged
 
     def end_summary(self):
-        include = ['hand', 'finished']
+        include = ['hand', 'finished', 'states']
         user_dict = {k: self.__dict__[k] for k in include}
         user_dict['points'] = self.points
         jsonStr = json.dumps({"endgame_summary": user_dict}, indent=4, sort_keys=True, cls=NumpyEncoder)
@@ -182,22 +181,7 @@ class Skyjo:
         return jsonStr
 
     def game_summary(self):
-        summary = self.__dict__
+        summary = self.__dict__.copy()
         summary.pop('deck', None)
         jsonStr = json.dumps({"game_summary" : summary}, indent=4, sort_keys=True, cls=NumpyEncoder)
         return jsonStr
-
-
-if __name__ == '__main__':
-
-    s = Skyjo()
-    s.summary()
-    s.start_game()
-    s.summary()
-
-    while s.finished is False:
-        s.update_table()
-        s.summary()
-
-
-
