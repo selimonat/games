@@ -30,6 +30,7 @@ def create_app(test_config=None):
 
     @app.route('/start_game')
     def start_game():
+        #TODO: just show the user info with hyperlinks to actions.
         return game.start_game()
 
     @app.route('/exchange_card/<id>')
