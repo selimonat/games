@@ -28,21 +28,25 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    @app.route('/')
+    def landing_page():
+        return str([f.__name__ for f in game.possible_actions])
+
     @app.route('/start_game')
     def start_game():
-        #TODO: just show the user info with hyperlinks to actions.
+        # TODO: just show the user info with hyperlinks to actions.
         return game.start_game()
 
     @app.route('/exchange_card/<id>')
     def _hand_table_exchange(id):
-        return game._hand_table_exchange(int(id))
+        return game.exchange_card(int(id))
 
     @app.route('/update_table')
     def _deck_to_table():
-        return game._deck_to_table()
+        return game.update_table()
 
     @app.route('/open_card/<id>')
     def _open_card(id):
-        return game._open_card(int(id))
+        return game.open_card(int(id))
 
     return app
