@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from pprint import pprint as pp
 
 
 cards = [ [-2] * 5, [-1] * 10, [0] * 15 , [1] * 10 , [2] * 10 , [3] * 10 , [4] * 10 , [5] * 10 , [6] * 10 ,
@@ -37,10 +38,11 @@ class Skyjo:
         self.deck = []
         self.deck_size = []
         self.hand = []
-        self.states = []
+        self.states = [False] * 12
         self.table = []
         self.finished = []
         self.possible_actions = [self.start_game]
+        # self.masked_hand = masked_hand
         print(f"There are {self.deck_size} cards in the deck.")
 
     def _deal(self, n):
@@ -56,9 +58,7 @@ class Skyjo:
             self.deck.remove(H)
         self.deck_size = len(self.deck)
         print(f"Updating cards, there are {self.deck_size} left.")
-        if self.deck_size < 1:
-            self.finished = True
-            print("Game finished because no more cards left.")
+
 
     def deal_hand(self):
         """
@@ -66,6 +66,7 @@ class Skyjo:
         """
         print("Starting game.")
         self.hand = self._deal(12)
+        #TODO: Organize in triplets
         self.states = [False] * 12  # False is Closed
         self.states[0] = True
         self.states[1] = True
@@ -78,7 +79,21 @@ class Skyjo:
         self._deck_to_table()
         self.possible_actions = [self._hand_table_exchange, self._deck_to_table]
         self.finished = False
-        return self.game_summary()
+        return self.summary()
+
+    @property
+    def points(self):
+        point = None
+        if len(self.hand) != 0:
+            return np.sum(self.hand[self.states])
+
+    @property
+    def masked_hand(self):
+        masked_hand = ['*'] * 12
+        for i in range(12):
+            if self.states[i] is True:
+                masked_hand[i] = str(self.hand[i])
+        return masked_hand
 
     def _hand_table_exchange(self, position):
 
@@ -89,11 +104,7 @@ class Skyjo:
         self._open_card(position)
         self.possible_actions = [self._hand_table_exchange, self._deck_to_table]
 
-        if len(self.closed_cards()) == 0:
-            self.finished = True
-            self.possible_actions = None
-
-        return self.game_summary()
+        return self.summary()
 
     def _deck_to_table(self):
 
@@ -101,8 +112,12 @@ class Skyjo:
         print(f"Moving card {card} from deck to table.")
         self.table.extend(card)
         self.possible_actions = [self._hand_table_exchange, self._open_card]
+        if self.deck_size < 1:
+            self.finished = True
+            print("Game finished because no more cards left.")
+            self.possible_actions = None
 
-        return self.game_summary()
+        return self.summary()
 
     def _open_card(self, position):
 
@@ -111,8 +126,9 @@ class Skyjo:
 
         if len(self.closed_cards()) == 0:
             self.finished = True
+            self.possible_actions = None
 
-        return self.game_summary()
+        return self.summary()
 
     def closed_cards(self):
 
@@ -122,31 +138,35 @@ class Skyjo:
             print("Game finished all hand is open.")
         return closed
 
+    def summary(self):
+        Merged = {**json.loads(self.user_summary()), **json.loads(self.game_summary())}
+        print(json.dumps(Merged, indent=4, sort_keys=True, cls=NumpyEncoder))
+        #TODO: if game finished print score
+        return Merged
+
+    def user_summary(self):
+        include = ['table', 'possible_actions']
+        user_dict = {k:self.__dict__[k] for k in include}
+        user_dict['points'] = self.points
+        user_dict['masked_hand'] = self.masked_hand
+        jsonStr = json.dumps({"user_summary":user_dict}, indent=4, sort_keys=True, cls=NumpyEncoder)
+        return jsonStr
+
     def game_summary(self):
-        print('Game Summary:')
-        jsonStr = json.dumps(self.__dict__, indent=4, sort_keys=True, cls=NumpyEncoder)
-        print(jsonStr)
+        jsonStr = json.dumps({"game_summary":self.__dict__}, indent=4, sort_keys=True, cls=NumpyEncoder)
         return jsonStr
 
 
 if __name__ == '__main__':
 
     s = Skyjo()
-    s.game_summary()
+    s.summary()
     s.start_game()
-    s.game_summary()
-    s._deck_to_table()
-    s.game_summary()
-    s._hand_table_exchange(3)
-    s.game_summary()
-    # s.open(2)
-    # s.game_summary()
-    # turn = 0
+    s.summary()
+
     # while s.finished is False:
-    #     print(f"======Turn {turn}")
-    #     s.update_table()
-    #     closed_index = s.closed_states()
-    #     s.replace(closed_index[0], s.table[0])
-    #     s.game_summary()
-    #     turn += 1
+    #     s._deck_to_table()
+    #     s.summary()
+
+
 

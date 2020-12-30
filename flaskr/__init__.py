@@ -28,24 +28,19 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # show the state of the game
-    @app.route('/game_summary')
-    def game_summary():
-        return game.game_summary()
-
     @app.route('/start_game')
     def start_game():
         return game.start_game()
 
-    @app.route('/_hand_table_exchange/<id>')
+    @app.route('/exchange_card/<id>')
     def _hand_table_exchange(id):
         return game._hand_table_exchange(int(id))
 
-    @app.route('/_deck_to_table')
+    @app.route('/update_table')
     def _deck_to_table():
         return game._deck_to_table()
 
-    @app.route('/_open_card/<id>')
+    @app.route('/open_card/<id>')
     def _open_card(id):
         return game._open_card(int(id))
 
