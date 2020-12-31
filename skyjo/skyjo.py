@@ -166,22 +166,22 @@ class Skyjo:
         return merged
 
     def end_summary(self):
-        include = ['hand', 'finished', 'states']
+        include = ['hand', 'finished', 'states', 'possible_actions']
         user_dict = {k: self.__dict__[k] for k in include}
         user_dict['points'] = self.points
-        jsonStr = json.dumps({"endgame_summary": user_dict}, indent=4, sort_keys=True, cls=NumpyEncoder)
-        return jsonStr
+        jsonstr = json.dumps(user_dict, indent=4, sort_keys=True, cls=NumpyEncoder)
+        return jsonstr
 
     def user_summary(self):
         include = ['table', 'possible_actions', 'finished']
         user_dict = {k:self.__dict__[k] for k in include}
         user_dict['points'] = self.points
         user_dict['masked_hand'] = self.masked_hand
-        jsonStr = json.dumps({"user_summary":user_dict}, indent=4, sort_keys=True, cls=NumpyEncoder)
-        return jsonStr
+        jsonstr = json.dumps(user_dict, indent=4, sort_keys=True, cls=NumpyEncoder)
+        return jsonstr
 
     def game_summary(self):
         summary = self.__dict__.copy()
         summary.pop('deck', None)
-        jsonStr = json.dumps({"game_summary" : summary}, indent=4, sort_keys=True, cls=NumpyEncoder)
-        return jsonStr
+        jsonstr = json.dumps(summary, indent=4, sort_keys=True, cls=NumpyEncoder)
+        return jsonstr
