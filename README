@@ -8,8 +8,13 @@ end-points via Flask.
 See `pyproject.toml`.
 
 ## Setup ##
+ 
 `make setup`
 
 ## Playing the game ##
-Run `flask run` on the project root directory.
+Add these variables to your environment
+`export FLASK_APP=flaskr`                                                                                                                                                                                                                                      
+`export FLASK_ENV=development`
+and run `flask run` on the project root directory.
+
 Connect to `http://127.0.0.1:5000` on your browser.
