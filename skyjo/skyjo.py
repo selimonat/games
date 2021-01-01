@@ -119,6 +119,7 @@ class Skyjo:
         print(f"Moving card {card} from deck to table.")
         self.table.extend(card)
         # TODO: Generate actions for each card, avoid putting this logic to flask
+        # TODO: Don't include open card if it is already open.
         self.possible_actions = [self.exchange_card.__name__, self.open_card.__name__]
         self.game_checks()
 
