@@ -1,21 +1,9 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template, url_for
 from skyjo.skyjo import Skyjo
 
 game = Skyjo()
-
-mapper = dict()
-mapper["start_game"] = 'http://127.0.0.1:5000/start_game'
-mapper["update_table"] = 'http://127.0.0.1:5000/update_table'
-mapper[f"open_card"] = list()
-for n in range(12):
-    mapper["open_card"].append(f"http://127.0.0.1:5000/open_card/{n}")
-mapper['exchange_card'] = list()
-for n in range(12):
-    mapper["exchange_card"].append(f"http://127.0.0.1:5000/exchange_card/{n}")
-
-
 
 def create_app(test_config=None):
     # create and configure the app
@@ -42,52 +30,40 @@ def create_app(test_config=None):
 
     @app.route('/')
     def landing_page():
-
         summary = game.summary()
-        for action in summary['possible_actions'].keys():
-            summary["possible_actions"][action] = mapper[action]
 
-        return summary
+        return render_template('template.html', summary=summary)
 
     @app.route('/start_game')
     def start_game():
 
         game.start_game()
-
         summary = game.summary()
-        for action in summary['possible_actions'].keys():
-            summary["possible_actions"][action] = mapper[action]
 
-        return summary
+        return render_template('template.html', summary=summary)
 
     @app.route('/exchange_card/<id>')
     def exchange_card(id):
 
         game.exchange_card(int(id))
         summary = game.summary()
-        for action in summary['possible_actions'].keys():
-            summary["possible_actions"][action] = mapper[action]
 
-        return summary
+        return render_template('template.html', summary=summary)
 
     @app.route('/update_table')
     def update_table():
 
         game.update_table()
         summary = game.summary()
-        for action in summary['possible_actions'].keys():
-            summary["possible_actions"][action] = mapper[action]
 
-        return summary
+        return render_template('template.html', summary=summary)
 
     @app.route('/open_card/<id>')
     def open_card(id):
 
         game.open_card(int(id))
         summary = game.summary()
-        for action in summary['possible_actions'].keys():
-            summary["possible_actions"][action] = mapper[action]
 
-        return summary
+        return render_template('template.html', summary=summary)
 
     return app

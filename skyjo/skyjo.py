@@ -42,7 +42,7 @@ class Skyjo:
         self.states = [False] * 12
         self.table = []
         self.finished = True
-        self.possible_actions = {self.start_game.__name__: []}
+        self.possible_actions = [self.start_game.__name__]
         # self.masked_hand = masked_hand
         print(f"There are {self.deck_size} cards in the deck.")
 
@@ -99,7 +99,7 @@ class Skyjo:
         self.deck_size = len(self.deck)
         self._deal_hand()
         self.update_table()
-        self.possible_actions = {self.exchange_card.__name__: [], self.update_table.__name__: []}
+        self.possible_actions = [self.exchange_card.__name__, self.update_table.__name__]
 
     def exchange_card(self, position):
         # Exchanges the card at position with the one on the table (and opens it).
@@ -110,21 +110,22 @@ class Skyjo:
         self.open_card(position)
 
         self.table.extend([dummy])
-        self.possible_actions = {self.exchange_card.__name__: [], self.update_table.__name__: []}
-        return self.summary()
+        self.possible_actions = [self.exchange_card.__name__,self.update_table.__name__]
+        self.game_checks()
 
     def update_table(self):
 
         card = self._deal(1)
         print(f"Moving card {card} from deck to table.")
         self.table.extend(card)
-        self.possible_actions = {self.exchange_card.__name__: [], self.open_card.__name__: []}
+        self.possible_actions = [self.exchange_card.__name__, self.open_card.__name__]
         self.game_checks()
 
     def open_card(self, position):
 
         print(f"Action: Open card at position {position}, it is a {self.hand[position]}")
         self.states[position] = True
+        self.possible_actions = [self.exchange_card.__name__, self.update_table.__name__]
         self.game_checks()
 
     def game_checks(self):
@@ -133,16 +134,16 @@ class Skyjo:
         if self.deck_size < 1:
             self.finished = True
             print("Game finished because no more cards left.")
-            self.possible_actions = {self.start_game.__name__: []}
+            self.possible_actions = [self.start_game.__name__]
 
         # if all cards are open
         if len(self.closed_cards()) == 0:
             self.finished = True
             print("Game finished because all cards open.")
-            self.possible_actions = {self.start_game.__name__: []}
+            self.possible_actions = [self.start_game.__name__]
 
         if self.finished is True:
-            self.possible_actions = {self.start_game.__name__: []}
+            self.possible_actions = [self.start_game.__name__]
 
         return self.summary()
 
