@@ -1,13 +1,15 @@
-SKYJO is a board game, https://boardgamegeek.com/boardgame/204135/skyjo
+[SKYJO](https://boardgamegeek.com/boardgame/204135/skyjo) is a card game.  
 
-This repo exposes an API to play this game using a simplified bare-bone JSON interface.
+This repo exposes an API to play SKYJO using a simplified bare-bone JSON interface linking different game actions to
+end-points via Flask. 
 
-## Requirements:
-Poetry for package management.
+## Requirements ##
+`Poetry` for package management.
+See `pyproject.toml`.
 
-## Setup
+## Setup ##
 `make setup`
 
-## Playing the game
+## Playing the game ##
 Run `flask run` on the project root directory.
 Connect to `http://127.0.0.1:5000` on your browser.
