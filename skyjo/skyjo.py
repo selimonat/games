@@ -22,16 +22,16 @@ class NumpyEncoder(json.JSONEncoder):
 class Skyjo:
 
     '''
-    Skyjo game with single player.
+    Skyjo game with single player. TODO: Implment multi-player.
 
-    First one must need to `start_game` which spawns your hand with 12 cards of which, two are open.
-    A turn starts by updating the card on the table `_update_table`, the initial update will spawn a card
-    on the table.
+    First one must need to `start_game` which spawns (1) your hand with 12 cards of which, two are open; and (2) one
+    card on the table.
 
-    There are 2 possible actions:
+    At this stage you have two choices:
+    (1) Exchange one of your cards with the one on the table (`exchange_card`). Or,
+    (2) Update the card on the table (`update_table`) and exchange it (`exchange_card`), or just open a card without
+    exchanging it (`open_card`).
 
-    1) `action_replace`: Take from table card to replace own card at index i. Will lead to `_update_table`.
-    2) `action_open`: Opens card i without taking the card from the table
     '''
 
     def __init__(self):
